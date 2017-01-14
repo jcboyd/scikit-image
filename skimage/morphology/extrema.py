@@ -66,8 +66,9 @@ def h_maxima(img, h, selem=None):
     h : unsigned integer
         The minimal height of all extracted maxima.
     selem : ndarray, optional
-        The neighborhood expressed as a 2-D array of 1's and 0's.
-        Defaults to a 3x3 square (8-connectivity).
+        The neighborhood expressed as an n-D array of 1's and 0's.
+        Default is the ball of radius 1 according to the maximum norm
+        (i.e. a 3x3 square for 2D images, a 3x3x3 cube for 3D images, etc.)
 
     Returns
     -------
@@ -143,8 +144,9 @@ def h_minima(img, h, selem=None):
     h : unsigned integer
         The minimal depth of all extracted minima.
     selem : ndarray, optional
-        The neighborhood expressed as a 2-D array of 1's and 0's.
-        Defaults to a 3x3 square (8-connectivity).
+        The neighborhood expressed as an n-D array of 1's and 0's.
+        Default is the ball of radius 1 according to the maximum norm
+        (i.e. a 3x3 square for 2D images, a 3x3x3 cube for 3D images, etc.)
 
     Returns
     -------
@@ -227,8 +229,9 @@ def local_maxima(img, selem=None):
     img : ndarray
         The input image for which the maxima are to be calculated.
     selem : ndarray, optional
-        The neighborhood expressed as a 2-D array of 1's and 0's.
-        Defaults to a 3x3 square (8-connectivity).
+        The neighborhood expressed as an n-D array of 1's and 0's.
+        Default is the ball of radius 1 according to the maximum norm
+        (i.e. a 3x3 square for 2D images, a 3x3x3 cube for 3D images, etc.)
 
     Returns
     -------
@@ -295,8 +298,9 @@ def local_minima(img, selem=None):
     img : ndarray
         The input image for which the minima are to be calculated.
     selem : ndarray, optional
-        The neighborhood expressed as a 2-D array of 1's and 0's.
-        Defaults to a 3x3 square (8-connectivity).
+        The neighborhood expressed as an n-D array of 1's and 0's.
+        Default is the ball of radius 1 according to the maximum norm
+        (i.e. a 3x3 square for 2D images, a 3x3x3 cube for 3D images, etc.)
 
     Returns
     -------
