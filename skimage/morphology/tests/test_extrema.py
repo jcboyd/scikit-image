@@ -4,15 +4,14 @@ import unittest
 import numpy as np
 
 from skimage.morphology import extrema
+from scipy import ndimage as ndi
 
 eps = 1e-12
 
 
 def diff(a, b):
-    a = np.asarray(a)
-    a = a.astype(np.float64)
-    b = np.asarray(b)
-    b = b.astype(np.float64)
+    a = np.asarray(a, dtype=np.float64)
+    b = np.asarray(b, dtype=np.float64)
     t = ((a - b)**2).sum()
     return math.sqrt(t)
 
@@ -199,7 +198,6 @@ class TestExtrema(unittest.TestCase):
 
     def test_extrema_float(self):
         "specific tests for float type"
-        print 'test_extrema_float'
         data = np.array([[10,  11,  13,  14,  14,  15,  14,  14,  13,  11],
                          [11,  13,  15,  16,  16,  16,  16,  16,  15,  13],
                          [13,  15,  40,  40,  18,  18,  18,  60,  60,  15],
@@ -254,6 +252,42 @@ class TestExtrema(unittest.TestCase):
         out = extrema.h_minima(inverted_data, 0.3)
         error = diff(expected_result, out)
         assert error < eps
+
+
+    def test_3d(self):
+        """tests the detection of maxima in 3D."""
+        img = np.zeros((8,8,8), dtype=np.uint8)
+        local_maxima = np.zeros((8,8,8), dtype=np.uint8)
+
+        # first maximum: only one pixel
+        img[1, 1:3, 1:3] = 100
+        img[2, 2, 2] = 200
+        img[3, 1:3, 1:3] = 100
+        local_maxima[2,2,2] = 1
+
+        # second maximum: three pixels in z-direction
+        img[5:8, 1, 1] = 200
+        local_maxima[5:8, 1, 1] = 1
+
+        # third: two maxima in 0 and 3. 
+        img[0, 5:8, 5:8] = 200
+        img[1, 6, 6] = 100
+        img[2, 5:7, 5:7] = 200
+        img[0:3, 5:8, 5:8] += 50
+        local_maxima[0, 5:8, 5:8] = 1
+        local_maxima[2, 5:7, 5:7] = 1
+
+        # four : one maximum in the corner of the square
+        img[6:8, 6:8, 6:8] = 200
+        img[7, 7, 7] = 255
+        local_maxima[7,7,7] = 1
+
+        se = ndi.generate_binary_structure(3, 1)
+        out = extrema.local_maxima(img, se)
+
+        error = diff(local_maxima, out)
+        assert error < eps
+
 
 if __name__ == "__main__":
     np.testing.run_module_suite()

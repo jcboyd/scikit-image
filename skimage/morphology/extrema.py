@@ -7,22 +7,20 @@ pixels in direct neighborhood of the connected set. In addition, the module
 provides the closely related functions h-maxima and h-minima.
 
 Soille, P. (2003). Morphological Image Analysis: Principles and Applications
-(2nd ed.). Springer-Verlag New York, Inc.
-
-Original author: Thomas Walter
+(2nd ed.), Chapter 6. Springer-Verlag New York, Inc.
 """
 
-import greyreconstruct
-import numpy as np
 
+from __future__ import absolute_import
+import numpy as np
+from . import greyreconstruct
+from skimage.util import dtype_limits
 
 def _add_constant_clip(img, const_value):
     """Adds a constant to the image and handles overflow issues
     for integer typed images.
     """
-    array_info = np.iinfo(img.dtype)
-    max_dtype = array_info.max
-    min_dtype = array_info.min
+    min_dtype, max_dtype = dtype_limits(img, clip_negative=False)
 
     if const_value > (max_dtype - min_dtype):
         raise ValueError("The added constant is not compatible"
@@ -37,9 +35,8 @@ def _subtract_constant_clip(img, const_value):
     """Subtracts a constant from the image and handles overflow issues
     for integer typed images.
     """
-    array_info = np.iinfo(img.dtype)
-    max_dtype = array_info.max
-    min_dtype = array_info.min
+    min_dtype, max_dtype = dtype_limits(img, clip_negative=False)
+    
     if const_value > (max_dtype-min_dtype):
         raise ValueError("The subtracted constant is not compatible"
                          "with the image data type.")
@@ -68,13 +65,13 @@ def h_maxima(img, h, selem=None):
         The input image for which the maxima are to be calculated.
     h : unsigned integer
         The minimal height of all extracted maxima.
-    selem : ndarray
+    selem : ndarray, optional
         The neighborhood expressed as a 2-D array of 1's and 0's.
         Defaults to a 3x3 square (8-connectivity).
 
     Returns
     -------
-    h-maxima : ndarray
+    h_maxima : ndarray
        The maxima of height >= h. The result image is a binary image, where
        pixels belonging to the selected maxima take value 1, the others
        take value 0.
@@ -88,7 +85,7 @@ def h_maxima(img, h, selem=None):
     References
     ----------
     .. [1] Soille, P., "Morphological Image Analysis: Principles and
-           Applications", 2nd edition (2003), ISBN 3540429883.
+           Applications" (Chapter 6), 2nd edition (2003), ISBN 3540429883.
 
     Examples
     --------
@@ -121,9 +118,9 @@ def h_maxima(img, h, selem=None):
     rec_img = greyreconstruct.reconstruction(shifted_img, img,
                                              method='dilation', selem=selem)
     residue_img = img - rec_img
-    result_img = np.zeros(img.shape)
-    result_img[residue_img >= h-10*resolution] = 1
-    return result_img.astype(np.uint8)
+    h_maxima = np.zeros(img.shape, dtype=np.uint8)
+    h_maxima[residue_img >= h-10*resolution] = 1
+    return h_maxima
 
 
 def h_minima(img, h, selem=None):
@@ -145,13 +142,13 @@ def h_minima(img, h, selem=None):
         The input image for which the minima are to be calculated.
     h : unsigned integer
         The minimal depth of all extracted minima.
-    selem : ndarray
+    selem : ndarray, optional
         The neighborhood expressed as a 2-D array of 1's and 0's.
         Defaults to a 3x3 square (8-connectivity).
 
     Returns
     -------
-    h-minima : ndarray
+    h_minima : ndarray
        The minima of depth >= h. The result image is a binary image, where
        pixels belonging to the selected minima take value 1, the other pixels
        take value 0.
@@ -165,7 +162,7 @@ def h_minima(img, h, selem=None):
     References
     ----------
     .. [1] Soille, P., "Morphological Image Analysis: Principles and
-           Applications", 2nd edition (2003), ISBN 3540429883.
+           Applications" (Chapter 6), 2nd edition (2003), ISBN 3540429883.
 
     Examples
     --------
@@ -199,9 +196,9 @@ def h_minima(img, h, selem=None):
     rec_img = greyreconstruct.reconstruction(shifted_img, img,
                                              method='erosion', selem=selem)
     residue_img = rec_img - img
-    result_img = np.zeros(img.shape)
-    result_img[residue_img >= h - 10*resolution] = 1
-    return result_img.astype(np.uint8)
+    h_minima = np.zeros(img.shape, dtype=np.uint8)
+    h_minima[residue_img >= h - 10*resolution] = 1
+    return h_minima
 
 
 def find_min_diff(img):
@@ -229,7 +226,7 @@ def local_maxima(img, selem=None):
     ----------
     img : ndarray
         The input image for which the maxima are to be calculated.
-    selem : ndarray
+    selem : ndarray, optional
         The neighborhood expressed as a 2-D array of 1's and 0's.
         Defaults to a 3x3 square (8-connectivity).
 
@@ -249,7 +246,7 @@ def local_maxima(img, selem=None):
     References
     ----------
     .. [1] Soille, P., "Morphological Image Analysis: Principles and
-           Applications", 2nd edition (2003), ISBN 3540429883.
+           Applications" (Chapter 6), 2nd edition (2003), ISBN 3540429883.
 
     Examples
     --------
@@ -297,7 +294,7 @@ def local_minima(img, selem=None):
     ----------
     img : ndarray
         The input image for which the minima are to be calculated.
-    selem : ndarray
+    selem : ndarray, optional
         The neighborhood expressed as a 2-D array of 1's and 0's.
         Defaults to a 3x3 square (8-connectivity).
 
@@ -317,7 +314,7 @@ def local_minima(img, selem=None):
     References
     ----------
     .. [1] Soille, P., "Morphological Image Analysis: Principles and
-           Applications", 2nd edition (2003), ISBN 3540429883.
+           Applications" (Chapter 6), 2nd edition (2003), ISBN 3540429883.
 
     Examples
     --------
