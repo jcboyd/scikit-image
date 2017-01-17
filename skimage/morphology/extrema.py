@@ -14,11 +14,11 @@ Soille, P. (2003). Morphological Image Analysis: Principles and Applications
 from __future__ import absolute_import
 import numpy as np
 from . import greyreconstruct
-from skimage.util import dtype_limits
+from ..util import dtype_limits
+
 
 def _add_constant_clip(img, const_value):
-    """Adds a constant to the image and handles overflow issues
-    for integer typed images.
+    """Add constant to the image while handling overflow issues gracefully.
     """
     min_dtype, max_dtype = dtype_limits(img, clip_negative=False)
 
@@ -32,11 +32,10 @@ def _add_constant_clip(img, const_value):
 
 
 def _subtract_constant_clip(img, const_value):
-    """Subtracts a constant from the image and handles overflow issues
-    for integer typed images.
+    """Subtract constant from image while handling underflow issues.
     """
     min_dtype, max_dtype = dtype_limits(img, clip_negative=False)
-    
+
     if const_value > (max_dtype-min_dtype):
         raise ValueError("The subtracted constant is not compatible"
                          "with the image data type.")
@@ -47,7 +46,7 @@ def _subtract_constant_clip(img, const_value):
 
 
 def h_maxima(img, h, selem=None):
-    """Determines all maxima of the image with height >= h.
+    """Determine all maxima of the image with height >= h.
 
     The local maxima are defined as connected sets of pixels with equal
     grey level strictly greater than the grey level of all pixels in direct
@@ -72,7 +71,7 @@ def h_maxima(img, h, selem=None):
 
     Returns
     -------
-    h_maxima : ndarray
+    h_max : ndarray
        The maxima of height >= h. The result image is a binary image, where
        pixels belonging to the selected maxima take value 1, the others
        take value 0.
@@ -110,22 +109,26 @@ def h_maxima(img, h, selem=None):
     The resulting image will contain 4 local maxima.
     """
     if np.issubdtype(img.dtype, 'half'):
+        eps = 10 * np.finfo(img.dtype).eps
+        if h < eps:
+            h = eps
         shifted_img = img - h
-        resolution = np.finfo(img.dtype).resolution
+        h_corrected = h - np.finfo(img.dtype).resolution
     else:
         shifted_img = _subtract_constant_clip(img, h)
-        resolution = 0
+        h_corrected = h
 
     rec_img = greyreconstruct.reconstruction(shifted_img, img,
                                              method='dilation', selem=selem)
     residue_img = img - rec_img
-    h_maxima = np.zeros(img.shape, dtype=np.uint8)
-    h_maxima[residue_img >= h-10*resolution] = 1
-    return h_maxima
+    h_max = np.zeros(img.shape, dtype=np.uint8)
+    h_max[residue_img >= h_corrected] = 1
+
+    return h_max
 
 
 def h_minima(img, h, selem=None):
-    """Determines all minima of the image with depth >= h.
+    """Determine all minima of the image with depth >= h.
 
     The local minima are defined as connected sets of pixels with equal
     grey level strictly smaller than the grey levels of all pixels in direct
@@ -150,7 +153,7 @@ def h_minima(img, h, selem=None):
 
     Returns
     -------
-    h_minima : ndarray
+    h_min : ndarray
        The minima of depth >= h. The result image is a binary image, where
        pixels belonging to the selected minima take value 1, the other pixels
        take value 0.
@@ -186,26 +189,28 @@ def h_minima(img, h, selem=None):
     >>> minima = extrema.h_minima(f, 40)
 
     The resulting image will contain 4 local minima.
-
     """
     if np.issubdtype(img.dtype, 'half'):
+        eps = 10 * np.finfo(img.dtype).eps
+        if h < eps:
+            h = eps
         shifted_img = img + h
-        resolution = np.finfo(img.dtype).resolution
+        h_corrected = h - np.finfo(img.dtype).resolution
     else:
         shifted_img = _add_constant_clip(img, h)
-        resolution = 0
+        h_corrected = h
 
     rec_img = greyreconstruct.reconstruction(shifted_img, img,
                                              method='erosion', selem=selem)
     residue_img = rec_img - img
-    h_minima = np.zeros(img.shape, dtype=np.uint8)
-    h_minima[residue_img >= h - 10*resolution] = 1
-    return h_minima
+    h_min = np.zeros(img.shape, dtype=np.uint8)
+    h_min[residue_img >= h_corrected] = 1
+    return h_min
 
 
 def find_min_diff(img):
     """
-    Finds the minimal difference of grey levels inside the image.
+    Find the minimal difference of grey levels inside the image.
     """
     img_vec = np.unique(img.flatten())
     img_vec.sort()
@@ -214,7 +219,7 @@ def find_min_diff(img):
 
 
 def local_maxima(img, selem=None):
-    """Determines all local maxima of the image.
+    """Determine all local maxima of the image.
 
     The local maxima are defined as connected sets of pixels with equal
     grey level strictly greater than the grey levels of all pixels in direct
@@ -235,7 +240,7 @@ def local_maxima(img, selem=None):
 
     Returns
     -------
-    local_maxima : ndarray
+    local_max : ndarray
        All local maxima of the image. The result image is a binary image,
        where pixels belonging to local maxima take value 1, the other pixels
        take value 0.
@@ -271,19 +276,18 @@ def local_maxima(img, selem=None):
     >>> maxima = extrema.local_maxima(f)
 
     The resulting image will contain all 6 local maxima.
-
     """
     if np.issubdtype(img.dtype, 'half'):
         # find the minimal grey level difference
         h = find_min_diff(img)
     else:
         h = 1
-    local_maxima = h_maxima(img, h, selem=selem)
-    return local_maxima
+    local_max = h_maxima(img, h, selem=selem)
+    return local_max
 
 
 def local_minima(img, selem=None):
-    """Determines all local minima of the image.
+    """Determine all local minima of the image.
 
     The local minima are defined as connected sets of pixels with equal
     grey level strictly smaller than the grey levels of all pixels in direct
@@ -304,7 +308,7 @@ def local_minima(img, selem=None):
 
     Returns
     -------
-    local_minima : ndarray
+    local_min : ndarray
        All local minima of the image. The result image is a binary image,
        where pixels belonging to local minima take value 1, the other pixels
        take value 0.
@@ -346,5 +350,5 @@ def local_minima(img, selem=None):
         h = find_min_diff(img)
     else:
         h = 1
-    local_minima = h_minima(img, h, selem=selem)
-    return local_minima
+    local_min = h_minima(img, h, selem=selem)
+    return local_min

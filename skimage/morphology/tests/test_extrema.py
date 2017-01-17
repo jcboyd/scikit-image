@@ -253,23 +253,22 @@ class TestExtrema(unittest.TestCase):
         error = diff(expected_result, out)
         assert error < eps
 
-
     def test_3d(self):
         """tests the detection of maxima in 3D."""
-        img = np.zeros((8,8,8), dtype=np.uint8)
-        local_maxima = np.zeros((8,8,8), dtype=np.uint8)
+        img = np.zeros((8, 8, 8), dtype=np.uint8)
+        local_maxima = np.zeros((8, 8, 8), dtype=np.uint8)
 
         # first maximum: only one pixel
         img[1, 1:3, 1:3] = 100
         img[2, 2, 2] = 200
         img[3, 1:3, 1:3] = 100
-        local_maxima[2,2,2] = 1
+        local_maxima[2, 2, 2] = 1
 
         # second maximum: three pixels in z-direction
         img[5:8, 1, 1] = 200
         local_maxima[5:8, 1, 1] = 1
 
-        # third: two maxima in 0 and 3. 
+        # third: two maxima in 0 and 3.
         img[0, 5:8, 5:8] = 200
         img[1, 6, 6] = 100
         img[2, 5:7, 5:7] = 200
@@ -280,7 +279,7 @@ class TestExtrema(unittest.TestCase):
         # four : one maximum in the corner of the square
         img[6:8, 6:8, 6:8] = 200
         img[7, 7, 7] = 255
-        local_maxima[7,7,7] = 1
+        local_maxima[7, 7, 7] = 1
 
         se = ndi.generate_binary_structure(3, 1)
         out = extrema.local_maxima(img, se)
