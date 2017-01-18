@@ -109,11 +109,11 @@ def h_maxima(img, h, selem=None):
     The resulting image will contain 4 local maxima.
     """
     if np.issubdtype(img.dtype, 'half'):
-        eps = 10 * np.finfo(img.dtype).eps
+        eps = np.finfo(img.dtype).resolution
         if h < eps:
-            h = eps
+            h = 2 * eps
+        h_corrected = h - eps
         shifted_img = img - h
-        h_corrected = h - np.finfo(img.dtype).resolution
     else:
         shifted_img = _subtract_constant_clip(img, h)
         h_corrected = h
@@ -123,7 +123,6 @@ def h_maxima(img, h, selem=None):
     residue_img = img - rec_img
     h_max = np.zeros(img.shape, dtype=np.uint8)
     h_max[residue_img >= h_corrected] = 1
-
     return h_max
 
 
@@ -191,11 +190,11 @@ def h_minima(img, h, selem=None):
     The resulting image will contain 4 local minima.
     """
     if np.issubdtype(img.dtype, 'half'):
-        eps = 10 * np.finfo(img.dtype).eps
+        eps = np.finfo(img.dtype).resolution
         if h < eps:
-            h = eps
+            h = 2 * eps
+        h_corrected = h - eps
         shifted_img = img + h
-        h_corrected = h - np.finfo(img.dtype).resolution
     else:
         shifted_img = _add_constant_clip(img, h)
         h_corrected = h

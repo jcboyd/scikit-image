@@ -82,8 +82,7 @@ class TestExtrema(unittest.TestCase):
                                     [0, 0, 1, 1, 0, 0, 0, 1, 1, 0],
                                     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]],
                                    dtype=np.uint8)
-        for dtype in [np.uint8, np.uint64, np.int8, np.int64,
-                      np.float, np.double]:
+        for dtype in [np.uint8, np.uint64, np.int8, np.int64]:
 
             test_data = data.astype(dtype)
             out = extrema.local_maxima(test_data)
@@ -118,8 +117,7 @@ class TestExtrema(unittest.TestCase):
                                     [0, 0, 1, 1, 0, 0, 0, 1, 1, 0],
                                     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]],
                                    dtype=np.uint8)
-        for dtype in [np.uint8, np.uint64, np.int8, np.int64,
-                      np.float, np.double]:
+        for dtype in [np.uint8, np.uint64, np.int8, np.int64]:
             data = data.astype(dtype)
             out = extrema.local_minima(data)
 
@@ -153,8 +151,7 @@ class TestExtrema(unittest.TestCase):
                                     [0, 0, 1, 1, 0, 0, 0, 1, 1, 0],
                                     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]],
                                    dtype=np.uint8)
-        for dtype in [np.uint8, np.uint64, np.int8, np.int64,
-                      np.float, np.double]:
+        for dtype in [np.uint8, np.uint64, np.int8, np.int64]:
             data = data.astype(dtype)
             out = extrema.h_maxima(data, 40)
 
@@ -187,8 +184,7 @@ class TestExtrema(unittest.TestCase):
                                     [0, 0, 1, 1, 0, 0, 0, 1, 1, 0],
                                     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]],
                                    dtype=np.uint8)
-        for dtype in [np.uint8, np.uint64, np.int8, np.int64,
-                      np.float, np.double]:
+        for dtype in [np.uint8, np.uint64, np.int8, np.int64]:
             data = data.astype(dtype)
             out = extrema.h_minima(data, 40)
 
@@ -198,18 +194,28 @@ class TestExtrema(unittest.TestCase):
 
     def test_extrema_float(self):
         "specific tests for float type"
-        data = np.array([[10,  11,  13,  14,  14,  15,  14,  14,  13,  11],
-                         [11,  13,  15,  16,  16,  16,  16,  16,  15,  13],
-                         [13,  15,  40,  40,  18,  18,  18,  60,  60,  15],
-                         [14,  16,  40,  40,  19,  19,  19,  60,  60,  16],
-                         [14,  16,  18,  19,  19,  19,  19,  19,  18,  16],
-                         [15,  18.2,  18,  19,  20.4,  20,  19,  19,  18,  16],
-                         [14,  16,  18,  19,  19,  19,  19,  19,  18,  16],
-                         [14,  16,  80,  80,  19,  19,  19, 100, 100,  16],
-                         [13,  15,  80,  80,  18,  18,  18, 100, 100,  15],
-                         [11,  13,  15,  16,  16,  16,  16,  16,  15,  13]],
+        data = np.array([[0.10, 0.11, 0.13, 0.14, 0.14, 0.15, 0.14,
+                          0.14, 0.13, 0.11],
+                         [0.11, 0.13, 0.15, 0.16, 0.16, 0.16, 0.16,
+                          0.16, 0.15, 0.13],
+                         [0.13, 0.15, 0.40, 0.40, 0.18, 0.18, 0.18,
+                          0.60, 0.60, 0.15],
+                         [0.14, 0.16, 0.40, 0.40, 0.19, 0.19, 0.19,
+                          0.60, 0.60, 0.16],
+                         [0.14, 0.16, 0.18, 0.19, 0.19, 0.19, 0.19,
+                          0.19, 0.18, 0.16],
+                         [0.15, 0.182, 0.18, 0.19, 0.204, 0.20, 0.19,
+                          0.19, 0.18, 0.16],
+                         [0.14, 0.16, 0.18, 0.19, 0.19, 0.19, 0.19,
+                          0.19, 0.18, 0.16],
+                         [0.14, 0.16, 0.80, 0.80, 0.19, 0.19, 0.19,
+                          1.0,  1.0, 0.16],
+                         [0.13, 0.15, 0.80, 0.80, 0.18, 0.18, 0.18,
+                          1.0, 1.0, 0.15],
+                         [0.11, 0.13, 0.15, 0.16, 0.16, 0.16, 0.16,
+                          0.16, 0.15, 0.13]],
                         dtype=np.float32)
-        inverted_data = 200 - data
+        inverted_data = 1.0 - data
 
         expected_result = np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                                     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -233,7 +239,7 @@ class TestExtrema(unittest.TestCase):
         error = diff(expected_result, out)
         assert error < eps
 
-        out = extrema.h_maxima(data, 0.3)
+        out = extrema.h_maxima(data, 0.003)
         expected_result = np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                                     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                                     [0, 0, 1, 1, 0, 0, 0, 1, 1, 0],
@@ -249,7 +255,7 @@ class TestExtrema(unittest.TestCase):
         error = diff(expected_result, out)
         assert error < eps
 
-        out = extrema.h_minima(inverted_data, 0.3)
+        out = extrema.h_minima(inverted_data, 0.003)
         error = diff(expected_result, out)
         assert error < eps
 
