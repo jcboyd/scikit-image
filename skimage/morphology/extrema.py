@@ -109,10 +109,10 @@ def h_maxima(img, h, selem=None):
     The resulting image will contain 4 local maxima.
     """
     if np.issubdtype(img.dtype, 'half'):
-        eps = np.finfo(img.dtype).resolution
-        if h < eps:
-            h = 2 * eps
-        h_corrected = h - eps
+        resolution = 2 * np.finfo(img.dtype).resolution
+        if h < resolution:
+            h = resolution
+        h_corrected = h - resolution / 2.0
         shifted_img = img - h
     else:
         shifted_img = _subtract_constant_clip(img, h)
@@ -190,10 +190,10 @@ def h_minima(img, h, selem=None):
     The resulting image will contain 4 local minima.
     """
     if np.issubdtype(img.dtype, 'half'):
-        eps = np.finfo(img.dtype).resolution
-        if h < eps:
-            h = 2 * eps
-        h_corrected = h - eps
+        resolution = 2 * np.finfo(img.dtype).resolution
+        if h < resolution:
+            h = resolution
+        h_corrected = h - resolution / 2.0
         shifted_img = img + h
     else:
         shifted_img = _add_constant_clip(img, h)
@@ -212,7 +212,6 @@ def find_min_diff(img):
     Find the minimal difference of grey levels inside the image.
     """
     img_vec = np.unique(img.flatten())
-    img_vec.sort()
     min_diff = np.min(img_vec[1:] - img_vec[:-1])
     return min_diff
 
