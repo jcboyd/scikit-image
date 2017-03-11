@@ -13,6 +13,7 @@ from .misc import remove_small_objects, remove_small_holes
 
 from ..measure._label import label
 
+from .criteria import area_closing
 
 __all__ = ['binary_erosion',
            'binary_dilation',
@@ -42,4 +43,5 @@ __all__ = ['binary_erosion',
            'convex_hull_object',
            'reconstruction',
            'remove_small_objects',
-           'remove_small_holes']
+           'remove_small_holes',
+           'area_closing']
