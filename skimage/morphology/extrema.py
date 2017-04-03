@@ -207,7 +207,7 @@ def h_minima(img, h, selem=None):
     return h_min
 
 
-def find_min_diff(img):
+def _find_min_diff(img):
     """
     Find the minimal difference of grey levels inside the image.
     """
