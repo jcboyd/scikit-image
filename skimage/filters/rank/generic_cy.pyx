@@ -37,24 +37,6 @@ cdef inline void _kernel_autolevel(dtype_t_out* out, Py_ssize_t odepth,
         out[0] = <dtype_t_out>0
 
 
-cdef inline void _kernel_bottomhat(dtype_t_out* out, Py_ssize_t odepth,
-                                   Py_ssize_t* histo,
-                                   double pop, dtype_t g,
-                                   Py_ssize_t n_bins, Py_ssize_t mid_bin,
-                                   double p0, double p1,
-                                   Py_ssize_t s0, Py_ssize_t s1) nogil:
-
-    cdef Py_ssize_t i
-
-    if pop:
-        for i in range(n_bins):
-            if histo[i]:
-                break
-        out[0] = <dtype_t_out>(g - i)
-    else:
-        out[0] = <dtype_t_out>0
-
-
 cdef inline void _kernel_equalize(dtype_t_out* out, Py_ssize_t odepth,
                                   Py_ssize_t* histo,
                                   double pop, dtype_t g,
@@ -304,24 +286,6 @@ cdef inline void _kernel_threshold(dtype_t_out* out, Py_ssize_t odepth,
         out[0] = <dtype_t_out>0
 
 
-cdef inline void _kernel_tophat(dtype_t_out* out, Py_ssize_t odepth,
-                                Py_ssize_t* histo,
-                                double pop, dtype_t g,
-                                Py_ssize_t n_bins, Py_ssize_t mid_bin,
-                                double p0, double p1,
-                                Py_ssize_t s0, Py_ssize_t s1) nogil:
-
-    cdef Py_ssize_t i
-
-    if pop:
-        for i in range(n_bins - 1, -1, -1):
-            if histo[i]:
-                break
-        out[0] = <dtype_t_out>(i - g)
-    else:
-        out[0] = <dtype_t_out>0
-
-
 cdef inline void _kernel_noise_filter(dtype_t_out* out, Py_ssize_t odepth,
                                       Py_ssize_t* histo,
                                       double pop, dtype_t g,
@@ -442,16 +406,6 @@ def _autolevel(dtype_t[:, ::1] image,
                signed char shift_x, signed char shift_y, Py_ssize_t n_bins):
 
     _core(_kernel_autolevel[dtype_t_out, dtype_t], image, selem, mask, out,
-          shift_x, shift_y, 0, 0, 0, 0, n_bins)
-
-
-def _bottomhat(dtype_t[:, ::1] image,
-               char[:, ::1] selem,
-               char[:, ::1] mask,
-               dtype_t_out[:, :, ::1] out,
-               signed char shift_x, signed char shift_y, Py_ssize_t n_bins):
-
-    _core(_kernel_bottomhat[dtype_t_out, dtype_t], image, selem, mask, out,
           shift_x, shift_y, 0, 0, 0, 0, n_bins)
 
 
@@ -582,16 +536,6 @@ def _threshold(dtype_t[:, ::1] image,
                signed char shift_x, signed char shift_y, Py_ssize_t n_bins):
 
     _core(_kernel_threshold[dtype_t_out, dtype_t], image, selem, mask, out,
-          shift_x, shift_y, 0, 0, 0, 0, n_bins)
-
-
-def _tophat(dtype_t[:, ::1] image,
-            char[:, ::1] selem,
-            char[:, ::1] mask,
-            dtype_t_out[:, :, ::1] out,
-            signed char shift_x, signed char shift_y, Py_ssize_t n_bins):
-
-    _core(_kernel_tophat[dtype_t_out, dtype_t], image, selem, mask, out,
           shift_x, shift_y, 0, 0, 0, 0, n_bins)
 
 
