@@ -22,7 +22,7 @@ the corresponding release branch.
   1. Review and cleanup ``doc/release/release_dev.txt``.
 
   2. Make a list of merges, contributors, and reviewers by running
-     ``doc/release/contribs.py <tag of previous release>``.
+     ``tools/generate_release_notes.py -h`` and following that file's usage.
 
   3. Paste this list at the end of the ``release_dev.txt``.
 
@@ -80,8 +80,8 @@ the corresponding release branch.
 - Build the package wheels (pre-compiled binaries) for various platforms:
 
   - Clone https://github.com/scikit-image/scikit-image-wheels.
-  - (If making a patch release, switch to the appropriate v<major>.<minor>.x
-    branch.)
+  - If making a patch release, switch to the appropriate v<major>.<minor>.x
+    branch. Otherwise, create that branch.
   - Update its ``.travis.yml`` file so that ``BUILD_COMMIT`` points to this
     release tag (e.g. ``v0.14.0``).
   - Update its ``.appveyor.yml`` file so that ``BUILD_COMMIT`` also points to
@@ -124,7 +124,9 @@ the corresponding release branch.
    twine upload dist/scikit-image-<major>.<minor>.0.tar.gz
 
 - Update the web frontpage:
-  The webpage is kept in a separate repo: scikit-image-web
+  The webpage source is kept in a separate repo: scikit-image-web. The
+  live webpage lives in a second repo, scikit-image.github.com, that you only
+  interact with via the ``make`` command within scikit-image-web.
 
   - Sync your branch with the remote repo: ``git pull``.
     If you try to ``make gh-pages`` when your branch is out of sync, it
@@ -132,8 +134,10 @@ the corresponding release branch.
   - Add release date to ``index.rst`` under "News".
   - Add previous stable version documentation path to disallowed paths
     in `robots.txt`
-  - Build using ``make gh-pages``.
-  - Push upstream: ``git push origin master`` in ``gh-pages``.
+  - Commit and push back to master. (Nothing is being served at this stage.)
+  - Build using ``make gh-pages``. (This checks out a copy of the
+    scikit-image.github.com repository in the ``gh-pages`` directory.)
+  - Push the built site: ``cd gh-pages`` and ``git push origin master``.
 
 - Post release notes on mailing lists, blog, Twitter, etc.
 
