@@ -6,7 +6,7 @@ from ._quickshift import quickshift
 from .boundaries import find_boundaries, mark_boundaries
 from ._clear_border import clear_border
 from ._join import join_segmentations, relabel_from_one, relabel_sequential
-from ._watershed import watershed
+from ._watershed import watershed, watershed_limited
 from ._chan_vese import chan_vese
 from .morphsnakes import (morphological_geodesic_active_contour,
                           morphological_chan_vese, inverse_gaussian_gradient,
@@ -27,6 +27,7 @@ __all__ = ['random_walker',
            'relabel_from_one',
            'relabel_sequential',
            'watershed',
+           'watershed_limited',
            'chan_vese',
            'morphological_geodesic_active_contour',
            'morphological_chan_vese',
